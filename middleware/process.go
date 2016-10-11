@@ -9,16 +9,15 @@ import (
 
 type DelegateRequest func(w http.ResponseWriter, req *http.Request)
 
-
+//Returns abstract request handler for model delegation
 func HandleRequest(h DelegateRequest) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
 				log.Printf("error: processing request %v", err)
-				writer := util.NewJsonWriter(w)
-				writer.RootObject(func() {
-					writer.KeyValue("status", "error")
-				})
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusInternalServerError)
+				 
 			}
 		}()
 		w.Header().Set("Content-Type", "application/json")
@@ -28,8 +27,10 @@ func HandleRequest(h DelegateRequest) http.HandlerFunc {
 	}
 }
 
+//Returns unimplemented request handler
 func HandleNotImplemented() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
+		log.Printf("error: processing unimplemented request %v", err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotImplemented)
 	}
