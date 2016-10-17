@@ -14,17 +14,17 @@ import (
 var (
 	brandSelect = `
 		SELECT json_build_object(
-  	  'id', CAST(brand.id AS text), 
- 		  'name', brand.name,
+  	  	'id', CAST(brand.id AS text), 
+ 		'name', brand.name,
   		'brandSynonym', (
-        SELECT COALESCE(array_to_json(array_agg(json_build_object(
-			    'id', CAST(brand_synonym.id AS text),
-		      'name', brand_synonym.name
-        ))), '{}'::json)
-        FROM brand_synonym
-       	WHERE brand.id = brand_synonym.brand_id  
-       )
-     ) 
+			SELECT COALESCE(array_to_json(array_agg(json_build_object(
+			    	'id', CAST(brand_synonym.id AS text),
+		      		'name', brand_synonym.name
+       			 ))), '{}'::json)
+        		FROM brand_synonym
+			WHERE brand.id = brand_synonym.brand_id  
+      			)
+		) 
 		AS brand
 		FROM brand `
 )
