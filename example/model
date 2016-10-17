@@ -35,9 +35,10 @@ type BrandResult struct {
 
 type Brand struct{}
 
+//Handle query request for brand api
 func (r *Brand) HandleQuery(w http.ResponseWriter, req *http.Request) {
 	conn := GetConnection()
-  writer := util.NewJsonWriter(w)
+  	writer := util.NewJsonWriter(w)
 	results, err := conn.Queryx(brandSelect)
 
 	if err != nil {
@@ -59,9 +60,10 @@ func (r *Brand) HandleQuery(w http.ResponseWriter, req *http.Request) {
 	})
 }
 
+//Handle read request for brand api
 func (r *Brand) HandleRead(w http.ResponseWriter, req *http.Request) {
 	conn := GetConnection()
-  writer := util.NewJsonWriter(w)
+ 	writer := util.NewJsonWriter(w)
 	result := BrandResult{}
 	id := req.URL.Query().Get(":id")
 	sql := brandSelect + "WHERE id = $1;"
@@ -77,9 +79,10 @@ func (r *Brand) HandleRead(w http.ResponseWriter, req *http.Request) {
 	})
 }
 
+//Handle create request for brand api
 func (r *Brand) HandleCreate(w http.ResponseWriter, req *http.Request) {
-  conn := GetConnection()
-  body := util.ParseBody(req.Body)
+ 	conn := GetConnection()
+  	body := util.ParseBody(req.Body)
 	data := util.ParseJson(body)
 	content := util.ParseJsonContent(data)
 
@@ -121,9 +124,10 @@ func (r *Brand) HandleCreate(w http.ResponseWriter, req *http.Request) {
 	})
 }
 
+//Handle update request for brand api
 func (r *Brand) HandleUpdate(w http.ResponseWriter, req *http.Request) {
 	conn := GetConnection()
-  body := util.ParseBody(req.Body)
+  	body := util.ParseBody(req.Body)
 	data := util.ParseJson(body)
 	content := util.ParseJsonContent(data)
 
@@ -161,6 +165,7 @@ func (r *Brand) HandleUpdate(w http.ResponseWriter, req *http.Request) {
 	})
 }
 
+//Parse brand json into string array
 func parseBrandValues(brand *jason.Object) []interface{} {
 	var values []interface{}
 	id, idErr := brand.GetString("id")
@@ -180,6 +185,7 @@ func parseBrandValues(brand *jason.Object) []interface{} {
 	return values
 }
 
+//Parse brand synonym json into string array
 func parseSynonymValues(synonym *jason.Object, brand *jason.Object) []interface{} {
 	var values []interface{}
 	id, idErr := synonym.GetString("id")
@@ -208,6 +214,7 @@ func parseSynonymValues(synonym *jason.Object, brand *jason.Object) []interface{
 	return values
 }
 
+//Parse brand synonym json collection into json array
 func parseSynonymArray(brand *jason.Object) []*jason.Object {
 	synonyms, err := brand.GetObjectArray("brandSynonym")
 	if err != nil {
