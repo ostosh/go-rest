@@ -10,6 +10,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
+//Returns wrapped sql driver for given driver type 
+//  and data source
 func New(driver, dataSource string) *sqlx.DB {
 	db, err := sqlx.Connect(driver, dataSource)
 	if err != nil {
@@ -20,6 +22,7 @@ func New(driver, dataSource string) *sqlx.DB {
 
 type Int64slice []int64
 
+//Returns sql string abstraction of integer array
 func (s Int64slice) Value() (driver.Value, error) {
 	var buffer bytes.Buffer
 
@@ -37,6 +40,7 @@ func (s Int64slice) Value() (driver.Value, error) {
 
 type StringSlice []string
 
+//Returns sql string abstraction of string array
 func (s StringSlice) Value() (driver.Value, error) {
 	if len(s) == 0 {
 		return nil, nil
