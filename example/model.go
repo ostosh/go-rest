@@ -3,6 +3,8 @@ package model
 import (
 	"net/http"
 	"strconv"
+	"io"
+	"io/ioutil"
 
 	"github.com/antonholmquist/jason"
 	"github.com/jmoiron/sqlx"
@@ -84,9 +86,9 @@ func (r *Brand) HandleRead(w http.ResponseWriter, req *http.Request) {
 //Handle create request for brand api
 func (r *Brand) HandleCreate(w http.ResponseWriter, req *http.Request) {
  	conn := GetConnection()
-  	body := util.ParseBody(req.Body)
-	data := util.ParseJson(body)
-	content := util.ParseJsonContent(data)
+  	body := parseBody(req.Body)
+	data := parseJson(body)
+	content := parseJsonContent(data)
 
 	brandStatement := sq.Insert("brand").PlaceholderFormat(sq.Dollar)
 	brandStatement = brandStatement.Columns("id", "name")
@@ -129,9 +131,9 @@ func (r *Brand) HandleCreate(w http.ResponseWriter, req *http.Request) {
 //Handle update request for brand api
 func (r *Brand) HandleUpdate(w http.ResponseWriter, req *http.Request) {
 	conn := GetConnection()
-  	body := util.ParseBody(req.Body)
-	data := util.ParseJson(body)
-	content := util.ParseJsonContent(data)
+  	body := parseBody(req.Body)
+	data := parseJson(body)
+	content := parseJsonContent(data)
 
 	for _, brand := range content {
 		brandStatement := sq.Update("brand").PlaceholderFormat(sq.Dollar)
@@ -224,3 +226,31 @@ func parseSynonymArray(brand *jason.Object) []*jason.Object {
 	}
 	return synonyms
 }
+
+//Return byte array from request body
+func parseBody(in io.ReadCloser) []byte {
+	out, err := ioutil.ReadAll(in)
+	if err != nil {
+		panic(err)
+	}
+	return out
+}
+
+//Return json struct from byte array
+func parseJson(in []byte) *jason.Object {
+	json, err := jason.NewObjectFromBytes(in)
+	if err != nil {
+		panic(err)
+	}
+	return json
+}
+
+//Return json array at key content from json object
+func parseJsonContent(in *jason.Object) []*jason.Object {
+	content, err := in.GetObjectArray("content")
+	if err != nil {
+		panic(err)
+	}
+	return content
+}
+
